@@ -4,6 +4,7 @@ import javax.servlet.annotation.WebServlet;
 
 import com.coxautodev.graphql.tools.SchemaParser;
 import com.hackernews.graphql.repository.LinkRepository;
+import com.hackernews.graphql.resolver.Mutation;
 import com.hackernews.graphql.resolver.Query;
 
 import graphql.schema.GraphQLSchema;
@@ -22,7 +23,7 @@ public class GraphQLEndpoint extends SimpleGraphQLServlet {
 		return SchemaParser
 				.newParser()
 				.file("schema.graphqls")
-				.resolvers(new Query(linkRepository))
+				.resolvers(new Query(linkRepository), new Mutation(linkRepository))
 				.build()
 				.makeExecutableSchema();
 	}
