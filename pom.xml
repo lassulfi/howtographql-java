@@ -9,6 +9,7 @@
 	<description>GraphQL Java Application Example</description>
 
 	<dependencies>
+		<!-- GraphQL -->
 		<dependency>
 			<groupId>com.graphql-java</groupId>
 			<artifactId>graphql-java</artifactId>
@@ -29,6 +30,12 @@
 			<artifactId>javax.servlet-api</artifactId>
 			<version>3.0.1</version>
 			<scope>provided</scope>
+		</dependency>
+		<!-- MongoDB -->
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongodb-driver</artifactId>
+			<version>3.4.2</version>
 		</dependency>
 	</dependencies>
 
