@@ -2,6 +2,7 @@ type Link {
   id: String!
   url: String!
   description: String!
+  postedBy: User!
 }
 
 type Query {
@@ -9,7 +10,26 @@ type Query {
 }
 
 type Mutation {
-    createLink(id: String!, url: String!, description: String!): Link
+    createUser(name: String!, authProvider: AuthData!): User
+    createLink(url: String!, description: String!): Link
+    signinUser(auth: AuthData!): SigninPayLoad
+}
+
+type User {
+  id: String!
+  name: String!
+  email: String!
+  password: String!
+}
+
+type SigninPayLoad {
+  token: String!
+  user: User!
+}
+
+input AuthData {
+  email: String!
+  password: String!
 }
 
 schema {
