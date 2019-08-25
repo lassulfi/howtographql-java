@@ -1,6 +1,8 @@
 package com.hackernews.graphql.endpoints;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -9,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.coxautodev.graphql.tools.SchemaParser;
 import com.hackernews.graphql.config.AuthContext;
 import com.hackernews.graphql.dataclasses.User;
+import com.hackernews.graphql.endpoints.exceptions.SanitizedError;
 import com.hackernews.graphql.repository.LinkRepository;
 import com.hackernews.graphql.repository.UserRepository;
 import com.hackernews.graphql.repository.VoteRepository;
@@ -21,6 +24,8 @@ import com.hackernews.graphql.scalars.Scalars;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
 
+import graphql.ExceptionWhileDataFetching;
+import graphql.GraphQLError;
 import graphql.schema.GraphQLSchema;
 import graphql.servlet.GraphQLContext;
 import graphql.servlet.SimpleGraphQLServlet;
@@ -68,6 +73,14 @@ public class GraphQLEndpoint extends SimpleGraphQLServlet {
 				.orElse(null);
 		
 		return new AuthContext(user, request, response);
+	}
+
+	@Override
+	protected List<GraphQLError> filterGraphQLErrors(List<GraphQLError> errors) {
+		return errors.stream()
+				.filter(e -> e instanceof ExceptionWhileDataFetching || super.isClientError(e))
+				.map(e -> e instanceof ExceptionWhileDataFetching ? new SanitizedError((ExceptionWhileDataFetching) e) : e)
+				.collect(Collectors.toList());
 	}
 	
 	
