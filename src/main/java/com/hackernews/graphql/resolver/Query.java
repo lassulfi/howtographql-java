@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.coxautodev.graphql.tools.GraphQLRootResolver;
 import com.hackernews.graphql.dataclasses.Link;
+import com.hackernews.graphql.dataclasses.LinkFilter;
 import com.hackernews.graphql.repository.LinkRepository;
 
 public class Query implements GraphQLRootResolver {
@@ -14,7 +15,7 @@ public class Query implements GraphQLRootResolver {
 		this.linkRepository = linkRepository;
 	}
 	
-	public List<Link> allLinks() {
-		return linkRepository.getAllLinks();
+	public List<Link> allLinks(LinkFilter filter) {
+		return linkRepository.getAllLinks(filter);
 	}
 }
