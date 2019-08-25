@@ -1,13 +1,19 @@
 package com.hackernews.graphql.resolver;
 
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+
 import com.coxautodev.graphql.tools.GraphQLRootResolver;
 import com.hackernews.graphql.config.AuthContext;
 import com.hackernews.graphql.dataclasses.AuthData;
 import com.hackernews.graphql.dataclasses.Link;
 import com.hackernews.graphql.dataclasses.SigninPayload;
 import com.hackernews.graphql.dataclasses.User;
+import com.hackernews.graphql.dataclasses.Vote;
 import com.hackernews.graphql.repository.LinkRepository;
 import com.hackernews.graphql.repository.UserRepository;
+import com.hackernews.graphql.repository.VoteRepository;
 
 import graphql.GraphQLException;
 import graphql.schema.DataFetchingEnvironment;
@@ -16,10 +22,12 @@ public class Mutation implements GraphQLRootResolver {
 
     private final LinkRepository linkRepository;
     private final UserRepository userRepository;
+    private final VoteRepository voteRepository;
 
-    public Mutation(LinkRepository linkRepository, UserRepository userRepository) {
+    public Mutation(LinkRepository linkRepository, UserRepository userRepository, VoteRepository voteRepository) {
         this.linkRepository = linkRepository;
         this.userRepository = userRepository;
+        this.voteRepository = voteRepository;
     }
 
     public Link createLink(String url, String description, DataFetchingEnvironment env) {
@@ -44,5 +52,11 @@ public class Mutation implements GraphQLRootResolver {
     		return new SigninPayload(user.getId(), user);
     	}
     	throw new GraphQLException("Invalid credentials");
+    }
+    
+    public Vote createVote(String linkId, String userId) {
+    	ZonedDateTime now = Instant.now().atZone(ZoneOffset.UTC);
+    	
+    	return voteRepository.saveVote(new Vote(now, userId, linkId));
     }
 }
