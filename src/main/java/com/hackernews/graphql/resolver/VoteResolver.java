@@ -1,13 +1,15 @@
 package com.hackernews.graphql.resolver;
 
-import com.coxautodev.graphql.tools.GraphQLResolver;
 import com.hackernews.graphql.dataclasses.Link;
 import com.hackernews.graphql.dataclasses.User;
 import com.hackernews.graphql.dataclasses.Vote;
 import com.hackernews.graphql.repository.LinkRepository;
 import com.hackernews.graphql.repository.UserRepository;
 
-public class VoteResolver implements GraphQLResolver<Vote> {
+import io.leangen.graphql.annotations.GraphQLContext;
+import io.leangen.graphql.annotations.GraphQLQuery;
+
+public class VoteResolver {
 
 	private final LinkRepository linkRepository;
 	private final UserRepository userRepository;
@@ -17,11 +19,13 @@ public class VoteResolver implements GraphQLResolver<Vote> {
 		this.userRepository = userRepository;
 	}
 	
-	public User user(Vote vote) {
+	@GraphQLQuery
+	public User user(@GraphQLContext Vote vote) {
 		return userRepository.findById(vote.getUserId());
 	}
 	
-	public Link link(Vote vote) {
+	@GraphQLQuery
+	public Link link(@GraphQLContext Vote vote) {
 		return linkRepository.getById(vote.getLinkId());
 	}
 }

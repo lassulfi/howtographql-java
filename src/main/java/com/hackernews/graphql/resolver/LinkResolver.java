@@ -1,11 +1,13 @@
 package com.hackernews.graphql.resolver;
 
-import com.coxautodev.graphql.tools.GraphQLResolver;
 import com.hackernews.graphql.dataclasses.Link;
 import com.hackernews.graphql.dataclasses.User;
 import com.hackernews.graphql.repository.UserRepository;
 
-public class LinkResolver implements GraphQLResolver<Link> {
+import io.leangen.graphql.annotations.GraphQLContext;
+import io.leangen.graphql.annotations.GraphQLQuery;
+
+public class LinkResolver {
 	
 	private final UserRepository userRepository;
 	
@@ -13,7 +15,8 @@ public class LinkResolver implements GraphQLResolver<Link> {
 		this.userRepository = userRepository;
 	}
 	
-	public User postedBy(Link link) {
+	@GraphQLQuery
+	public User postedBy(@GraphQLContext Link link) {
 		if(link.getUserId() == null) {
 			return null;
 		}

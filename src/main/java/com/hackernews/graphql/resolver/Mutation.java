@@ -4,7 +4,6 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
-import com.coxautodev.graphql.tools.GraphQLRootResolver;
 import com.hackernews.graphql.config.AuthContext;
 import com.hackernews.graphql.dataclasses.AuthData;
 import com.hackernews.graphql.dataclasses.Link;
@@ -17,8 +16,10 @@ import com.hackernews.graphql.repository.VoteRepository;
 
 import graphql.GraphQLException;
 import graphql.schema.DataFetchingEnvironment;
+import io.leangen.graphql.annotations.GraphQLMutation;
+import io.leangen.graphql.annotations.GraphQLRootContext;
 
-public class Mutation implements GraphQLRootResolver {
+public class Mutation {
 
     private final LinkRepository linkRepository;
     private final UserRepository userRepository;
@@ -30,9 +31,8 @@ public class Mutation implements GraphQLRootResolver {
         this.voteRepository = voteRepository;
     }
 
-    public Link createLink(String url, String description, DataFetchingEnvironment env) {
-    	AuthContext context = env.getContext();
-    	
+    @GraphQLMutation
+    public Link createLink(String url, String description, @GraphQLRootContext AuthContext context) {  	
         Link newLink = new Link(url, description, context.getUser().getId());
 
         this.linkRepository.saveLink(newLink);

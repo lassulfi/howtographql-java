@@ -8,7 +8,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.coxautodev.graphql.tools.SchemaParser;
 import com.hackernews.graphql.config.AuthContext;
 import com.hackernews.graphql.dataclasses.User;
 import com.hackernews.graphql.endpoints.exceptions.SanitizedError;
@@ -18,9 +17,6 @@ import com.hackernews.graphql.repository.VoteRepository;
 import com.hackernews.graphql.resolver.LinkResolver;
 import com.hackernews.graphql.resolver.Mutation;
 import com.hackernews.graphql.resolver.Query;
-import com.hackernews.graphql.resolver.SinginResolver;
-import com.hackernews.graphql.resolver.VoteResolver;
-import com.hackernews.graphql.scalars.Scalars;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
 
@@ -29,6 +25,7 @@ import graphql.GraphQLError;
 import graphql.schema.GraphQLSchema;
 import graphql.servlet.GraphQLContext;
 import graphql.servlet.SimpleGraphQLServlet;
+import io.leangen.graphql.GraphQLSchemaGenerator;
 
 @WebServlet(urlPatterns = "/graphql")
 public class GraphQLEndpoint extends SimpleGraphQLServlet {
@@ -49,18 +46,11 @@ public class GraphQLEndpoint extends SimpleGraphQLServlet {
 	}
 
 	private static GraphQLSchema buildSchema() {
-		return SchemaParser
-				.newParser()
-				.file("schema.graphqls")
-				.resolvers(
-						new Query(linkRepository), 
-						new Mutation(linkRepository, userRepository, voteRepository), 
-						new SinginResolver(),
-						new LinkResolver(userRepository),
-						new VoteResolver(linkRepository, userRepository))
-				.scalars(Scalars.dateTime)
-				.build()
-				.makeExecutableSchema();
+		Query query = new Query(linkRepository);
+		LinkResolver linkResolver = new LinkResolver(userRepository);
+		Mutation mutation = new Mutation(linkRepository, userRepository, voteRepository); 
+		
+		return new GraphQLSchemaGenerator().withOperationsFromSingletons(query, linkResolver, mutation).generate();
 	}
 
 	@Override
